@@ -1,0 +1,270 @@
+# AADITYA PRAKASH 2502140122
+import pwinput      #USED THIS LIBRARY FOR MASKING PASSWORD AS *
+from datetime import datetime, timedelta
+def authenticate_user():
+    password="Library"
+    userid=2502140122
+# USED WHILE LOOP FOR UNLIMITED ATTEMPTS FOR LOG IN
+    while True:
+        try:
+            userlib=int(input("Enter the user id for the Library Server: "))
+        except:
+            print("User ID must be a Number.")
+            continue
+        passlib = pwinput.pwinput(prompt ="Enter your Password for the Library system: ",mask="*")     #MASKING IS DONE HERE
+        if passlib == password and userlib==userid:
+            print("-----Access Granted to the Library Data Server.-----")
+            print()
+            break
+        else:
+            print("-----Invalid Password!!------")
+# THE LIBRARY MANAGEMENT SYSTEM MENU
+def display_menu():
+    print("              Welcome To Rishihood Library System!!              ")
+    print()
+    print("-----Choose the option from the given list below!!!-----")
+    print("1.Add Book \n"
+    "2.Reserve Book\n" 
+    "3.Return Book\n" 
+    "4.Calculate Fine\n" 
+    "5.Generate Report Fine\n" 
+    "6.Search Book\n"
+    "7.Exit the System")
+# ALL FUNCTIONS ARE DEFINED HERE
+def add_book():
+    print()
+    print("You have selected the adding book opption.")
+    print("Kindly fill the details given below to add the book to the Library server.")
+    print()
+    bookid=input("Enter Book ID: ")
+    booktitle=input("Enter Book Title: ")
+    authorname=input("Enter the name of the Author: ")
+    genre=input("Enter the Genre of the book: ")
+    reserved=False
+    reserver=False
+    issue=False
+    due=False
+    book_list.append({"book_id":bookid, "title":booktitle, "author":authorname,"genre":genre, "is_reserved":reserved, "reserved_by":reserver, "issue_date":issue, "due_date":due})
+    print(f"The book with the following details \n Book Name: {booktitle} \n Book ID: {bookid} \n Book Genre: {genre}\nAuthor Name: {authorname}\n is added successfully")
+    for book in book_list:
+        print(book)
+# RESERVE BOOK FUNCTION
+def reserve_book():
+    print()
+    print("You have selected the Reserve Book option.")
+    book_id = input("Enter the Book ID you want to reserve: ").strip()
+    user_id = input("Enter your User ID: ").strip()
+
+    for book in book_list:
+        if book["book_id"] == book_id:
+            if book["is_reserved"]:
+                print(f"Sorry, '{book['title']}' is already reserved by {book['reserved_by']}.")
+                return
+            else:
+                issue_date = datetime.today()
+                due_date = issue_date + timedelta(days=15)
+                book["is_reserved"] = True
+                book["reserved_by"] = user_id
+                book["issue_date"] = issue_date.strftime("%Y-%m-%d")
+                book["due_date"] = due_date.strftime("%Y-%m-%d")
+                reserve_list.append({"book_id": book_id, "reserved_by": user_id, "issue_date": book["issue_date"], "due_date": book["due_date"]})
+                print(f"Book '{book['title']}' successfully reserved by {user_id}. Due date: {book['due_date']}")
+                return
+    print("No book found with the given Book ID.")
+
+# RETURN BOOK FUNCTION
+def return_book():
+    print()
+    print("You have selected the Return Book option.")
+    book_id = input("Enter the Book ID you want to return: ").strip()
+    user_id = input("Enter your User ID: ").strip()
+
+    for book in book_list:
+        if book["book_id"] == book_id and book["reserved_by"] == user_id:
+            book["is_reserved"] = False
+            book["reserved_by"] = None
+            book["issue_date"] = None
+            book["due_date"] = None
+            print(f"Book '{book['title']}' has been successfully returned by {user_id}.")
+            return
+    print("Either the book was not found or not reserved by this user.")
+
+# CALCULATE FINE FUNCTION
+def calculate_fine():
+    print()
+    print("You have selected the Calculate Fine option.")
+    book_id = input("Enter the Book ID: ").strip()
+    today = datetime.today()
+
+    for book in book_list:
+        if book["book_id"] == book_id and book["is_reserved"]:
+            due_date = datetime.strptime(book["due_date"], "%Y-%m-%d")
+            days_overdue = (today - due_date).days
+            if days_overdue > 0:
+                fine = days_overdue * 5  # ₹5 per day
+                fines.append({"book_id": book_id, "reserved_by": book["reserved_by"], "fine_amount": fine})
+                print(f"The book '{book['title']}' is overdue by {days_overdue} days. Fine: ₹{fine}")
+                return
+            else:
+                print("The book is not overdue. No fine applicable.")
+                return
+    print("No matching reserved book found.")
+
+# GENERATE REPORT FINE FUNCTION
+def generate_report_fine():
+    print()
+    print("Fine Report of All Users:")
+    if not fines:
+        print("No fines have been recorded yet.")
+    else:
+        for fine in fines:
+            print(f"Book ID: {fine['book_id']} | User ID: {fine['reserved_by']} | Fine Amount: ₹{fine['fine_amount']}")
+    print()
+
+# SEARCH BOOK FUNCTION
+def search_book():
+    print()
+    print("You have selected the Search Book option.")
+    keyword = input("Enter Book ID, Title, or Author to search: ").strip().lower()
+
+    results = []
+    for book in book_list:
+        if (keyword in book["book_id"].lower()) or (keyword in book["title"].lower()) or (keyword in book["author"].lower()):
+            results.append(book)
+
+    if results:
+        print(f"Found {len(results)} matching book(s):\n")
+        for b in results:
+            print(f"Book ID: {b['book_id']}, Title: {b['title']}, Author: {b['author']}, Genre: {b['genre']}, Reserved: {b['is_reserved']}, Reserved By: {b['reserved_by']}")
+    else:
+        print("No matching books found.")
+
+fines=[]
+Student_data=[]
+reserve_list=[]
+# IT IS A BOOK LIST OF 100 ENTRIES WHICH CAN BE EDITED BY USING THE SYSTEM
+book_list = [
+{"book_id": "B001", "title": "Algo Trading", "author": "S. Mukherjee", "genre": "Mathematics", "is_reserved": True, "reserved_by": "U066", "issue_date": "2025-10-19", "due_date": "2025-11-12"},
+{"book_id": "B002", "title": "No-Code Pioneers", "author": "J. Doe", "genre": "Venture Capital", "is_reserved": True, "reserved_by": "U038", "issue_date": "2025-10-08", "due_date": "2025-10-23"},
+{"book_id": "B003", "title": "Quantum Computing", "author": "Y. Saxena", "genre": "Venture Capital", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B004", "title": "Hacking the System", "author": "P. Singh", "genre": "Programming", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B005", "title": "Culture Connect", "author": "T. Iyer", "genre": "Programming", "is_reserved": True, "reserved_by": "U055", "issue_date": "2025-10-20", "due_date": "2025-11-04"},
+{"book_id": "B006", "title": "Sanskrit Chants", "author": "B. Kulkarni", "genre": "Indian Heritage", "is_reserved": True, "reserved_by": "U035", "issue_date": "2025-10-15", "due_date": "2025-10-30"},
+{"book_id": "B007", "title": "AI for All", "author": "T. Iyer", "genre": "Cultural Studies", "is_reserved": True, "reserved_by": "U018", "issue_date": "2025-10-08", "due_date": "2025-10-23"},
+{"book_id": "B008", "title": "Startup Cities", "author": "T. Iyer", "genre": "Technology", "is_reserved": True, "reserved_by": "U050", "issue_date": "2025-10-14", "due_date": "2025-10-29"},
+{"book_id": "B009", "title": "Linear Mapping", "author": "F. Kapoor", "genre": "Cultural Studies", "is_reserved": True, "reserved_by": "U001", "issue_date": "2025-10-17", "due_date": "2025-11-01"},
+{"book_id": "B010", "title": "Investment Game", "author": "G. Joshi", "genre": "Mathematics", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B011", "title": "Holographic Tech", "author": "A. Banerjee", "genre": "Venture Capital", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B012", "title": "Linear Systems", "author": "R. Sharma", "genre": "Programming", "is_reserved": True, "reserved_by": "U030", "issue_date": "2025-10-22", "due_date": "2025-11-06"},
+{"book_id": "B013", "title": "Algo Trading", "author": "D. Mehta", "genre": "Poetry", "is_reserved": True, "reserved_by": "U034", "issue_date": "2025-10-09", "due_date": "2025-10-24"},
+{"book_id": "B014", "title": "Data Science Essentials", "author": "D. Mehta", "genre": "History", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B015", "title": "Venture Essentials", "author": "Z. Jain", "genre": "Programming", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B016", "title": "Computing Essentials", "author": "F. Kapoor", "genre": "Artificial Intelligence", "is_reserved": True, "reserved_by": "U045", "issue_date": "2025-10-11", "due_date": "2025-10-26"},
+{"book_id": "B017", "title": "Entrepreneur Mindset", "author": "Y. Saxena", "genre": "Entrepreneurship", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B018", "title": "Resonance in Nature", "author": "Z. Jain", "genre": "Programming", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B019", "title": "Advanced Python", "author": "B. Kulkarni", "genre": "Mathematics", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B020", "title": "Sacred Geometry", "author": "B. Kulkarni", "genre": "Venture Capital", "is_reserved": True, "reserved_by": "U052", "issue_date": "2025-10-11", "due_date": "2025-10-26"},
+{"book_id": "B021", "title": "Vedic Mathematics", "author": "S. Mukherjee", "genre": "Entrepreneurship", "is_reserved": True, "reserved_by": "U026", "issue_date": "2025-10-07", "due_date": "2025-10-22"},
+{"book_id": "B022", "title": "Mindful Computing", "author": "J. Doe", "genre": "Artificial Intelligence", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B023", "title": "Scriptural Mathematics", "author": "C. Rao", "genre": "Technology", "is_reserved": True, "reserved_by": "U071", "issue_date": "2025-10-18", "due_date": "2025-11-02"},
+{"book_id": "B024", "title": "Hacking the System", "author": "L. Gupta", "genre": "Technology", "is_reserved": True, "reserved_by": "U058", "issue_date": "2025-10-06", "due_date": "2025-10-21"},
+{"book_id": "B025", "title": "Holographic Tech", "author": "Y. Saxena", "genre": "Technology", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B026", "title": "Investment Logic", "author": "B. Kulkarni", "genre": "Technology", "is_reserved": True, "reserved_by": "U057", "issue_date": "2025-10-16", "due_date": "2025-10-31"},
+{"book_id": "B027", "title": "Beginner Java", "author": "J. Doe", "genre": "Programming", "is_reserved": True, "reserved_by": "U066", "issue_date": "2025-10-21", "due_date": "2025-11-05"},
+{"book_id": "B028", "title": "Statistical Analysis", "author": "V. Patel", "genre": "Technology", "is_reserved": True, "reserved_by": "U009", "issue_date": "2025-10-05", "due_date": "2025-10-20"},
+{"book_id": "B029", "title": "Startup Blueprint", "author": "T. Iyer", "genre": "Venture Capital", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B030", "title": "Ethics in Coding", "author": "D. Mehta", "genre": "Entrepreneurship", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B031", "title": "AI & Humanity", "author": "Y. Saxena", "genre": "Artificial Intelligence", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B032", "title": "Digital Dharma", "author": "S. Mukherjee", "genre": "Indian Heritage", "is_reserved": True, "reserved_by": "U047", "issue_date": "2025-10-15", "due_date": "2025-10-30"},
+{"book_id": "B033", "title": "Smart Investments", "author": "G. Joshi", "genre": "Mathematics", "is_reserved": True, "reserved_by": "U024", "issue_date": "2025-10-18", "due_date": "2025-11-02"},
+{"book_id": "B034", "title": "Metaverse Future", "author": "Z. Jain", "genre": "Technology", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B035", "title": "Design Thinking", "author": "T. Iyer", "genre": "Entrepreneurship", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B036", "title": "Digital Bharat", "author": "C. Rao", "genre": "Indian Heritage", "is_reserved": True, "reserved_by": "U019", "issue_date": "2025-10-13", "due_date": "2025-10-28"},
+{"book_id": "B037", "title": "Coding for Kids", "author": "J. Doe", "genre": "Programming", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B038", "title": "Sanskrit AI", "author": "A. Banerjee", "genre": "Artificial Intelligence", "is_reserved": True, "reserved_by": "U062", "issue_date": "2025-10-17", "due_date": "2025-11-01"},
+{"book_id": "B039", "title": "Future of Robotics", "author": "R. Sharma", "genre": "Technology", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B040", "title": "AI Revolution", "author": "Y. Saxena", "genre": "Artificial Intelligence", "is_reserved": True, "reserved_by": "U020", "issue_date": "2025-10-09", "due_date": "2025-10-24"},
+{"book_id": "B041", "title": "Quantum Logic", "author": "V. Patel", "genre": "Mathematics", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B042", "title": "Startup Growth", "author": "G. Joshi", "genre": "Entrepreneurship", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B043", "title": "Machine Vision", "author": "B. Kulkarni", "genre": "Artificial Intelligence", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B044", "title": "Blockchain Basics", "author": "C. Rao", "genre": "Technology", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B045", "title": "Ethical AI", "author": "J. Doe", "genre": "Artificial Intelligence", "is_reserved": True, "reserved_by": "U012", "issue_date": "2025-10-14", "due_date": "2025-10-29"},
+{"book_id": "B046", "title": "Business Analytics", "author": "Z. Jain", "genre": "Entrepreneurship", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B047", "title": "Indian Philosophy", "author": "T. Iyer", "genre": "Indian Heritage", "is_reserved": True, "reserved_by": "U031", "issue_date": "2025-10-19", "due_date": "2025-11-03"},
+{"book_id": "B048", "title": "Cyber Security 101", "author": "P. Singh", "genre": "Technology", "is_reserved": True, "reserved_by": "U015", "issue_date": "2025-10-12", "due_date": "2025-10-27"},
+{"book_id": "B049", "title": "AI Startups", "author": "R. Sharma", "genre": "Entrepreneurship", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B050", "title": "Digital Future", "author": "S. Mukherjee", "genre": "Technology", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B051", "title": "Deep Learning", "author": "Y. Saxena", "genre": "Artificial Intelligence", "is_reserved": True, "reserved_by": "U061", "issue_date": "2025-10-16", "due_date": "2025-10-31"},
+{"book_id": "B052", "title": "Startup Funding", "author": "T. Iyer", "genre": "Venture Capital", "is_reserved": True, "reserved_by": "U029", "issue_date": "2025-10-10", "due_date": "2025-10-25"},
+{"book_id": "B053", "title": "Neural Networks", "author": "J. Doe", "genre": "Artificial Intelligence", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B054", "title": "Creative Coding", "author": "D. Mehta", "genre": "Programming", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B055", "title": "Tech Ethics", "author": "G. Joshi", "genre": "Technology", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B056", "title": "Spiritual AI", "author": "C. Rao", "genre": "Indian Heritage", "is_reserved": True, "reserved_by": "U073", "issue_date": "2025-10-20", "due_date": "2025-11-04"},
+{"book_id": "B057", "title": "Coding Zen", "author": "A. Banerjee", "genre": "Cultural Studies", "is_reserved": True, "reserved_by": "U033", "issue_date": "2025-10-15", "due_date": "2025-10-30"},
+{"book_id": "B058", "title": "Metaverse Design", "author": "L. Gupta", "genre": "Technology", "is_reserved": True, "reserved_by": "U046", "issue_date": "2025-10-17", "due_date": "2025-11-01"},
+{"book_id": "B059", "title": "AI Leadership", "author": "Y. Saxena", "genre": "Entrepreneurship", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B060", "title": "Cultural Tech", "author": "T. Iyer", "genre": "Cultural Studies", "is_reserved": True, "reserved_by": "U037", "issue_date": "2025-10-18", "due_date": "2025-11-02"},
+{"book_id": "B061", "title": "Entrepreneur DNA", "author": "Z. Jain", "genre": "Entrepreneurship", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B062", "title": "Innovate India", "author": "S. Mukherjee", "genre": "Entrepreneurship", "is_reserved": True, "reserved_by": "U008", "issue_date": "2025-10-12", "due_date": "2025-10-27"},
+{"book_id": "B063", "title": "Hologram Reality", "author": "A. Banerjee", "genre": "Technology", "is_reserved": True, "reserved_by": "U040", "issue_date": "2025-10-13", "due_date": "2025-10-28"},
+{"book_id": "B064", "title": "Tech Spirituality", "author": "C. Rao", "genre": "Indian Heritage", "is_reserved": True, "reserved_by": "U022", "issue_date": "2025-10-15", "due_date": "2025-10-30"},
+{"book_id": "B065", "title": "AI Consciousness", "author": "J. Doe", "genre": "Artificial Intelligence", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B066", "title": "Python Pro", "author": "R. Sharma", "genre": "Programming", "is_reserved": True, "reserved_by": "U025", "issue_date": "2025-10-19", "due_date": "2025-11-03"},
+{"book_id": "B067", "title": "Entrepreneur Mind", "author": "G. Joshi", "genre": "Entrepreneurship", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B068", "title": "Quantum India", "author": "B. Kulkarni", "genre": "Mathematics", "is_reserved": True, "reserved_by": "U060", "issue_date": "2025-10-14", "due_date": "2025-10-29"},
+{"book_id": "B069", "title": "Digital Design", "author": "L. Gupta", "genre": "Technology", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B070", "title": "Innovation Path", "author": "Z. Jain", "genre": "Entrepreneurship", "is_reserved": True, "reserved_by": "U017", "issue_date": "2025-10-10", "due_date": "2025-10-25"},
+{"book_id": "B071", "title": "Coding Future", "author": "P. Singh", "genre": "Programming", "is_reserved": True, "reserved_by": "U039", "issue_date": "2025-10-11", "due_date": "2025-10-26"},
+{"book_id": "B072", "title": "AI Revolution 2.0", "author": "Y. Saxena", "genre": "Artificial Intelligence", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B073", "title": "Cultural India", "author": "T. Iyer", "genre": "Indian Heritage", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B074", "title": "Robotics 101", "author": "R. Sharma", "genre": "Technology", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B075", "title": "AI & Society", "author": "S. Mukherjee", "genre": "Artificial Intelligence", "is_reserved": True, "reserved_by": "U010", "issue_date": "2025-10-14", "due_date": "2025-10-29"},
+{"book_id": "B076", "title": "Ethics in Tech", "author": "C. Rao", "genre": "Technology", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B077", "title": "Cultural Business", "author": "T. Iyer", "genre": "Entrepreneurship", "is_reserved": True, "reserved_by": "U013", "issue_date": "2025-10-09", "due_date": "2025-10-24"},
+{"book_id": "B078", "title": "Digital Consciousness", "author": "A. Banerjee", "genre": "Cultural Studies", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B079", "title": "Python Basics", "author": "J. Doe", "genre": "Programming", "is_reserved": True, "reserved_by": "U064", "issue_date": "2025-10-15", "due_date": "2025-10-30"},
+{"book_id": "B080", "title": "Entrepreneur Future", "author": "Z. Jain", "genre": "Entrepreneurship", "is_reserved": True, "reserved_by": "U070", "issue_date": "2025-10-21", "due_date": "2025-11-05"},
+{"book_id": "B081", "title": "Startup Strategies", "author": "T. Iyer", "genre": "Venture Capital", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B082", "title": "Mathematical Logic", "author": "V. Patel", "genre": "Mathematics", "is_reserved": True, "reserved_by": "U027", "issue_date": "2025-10-13", "due_date": "2025-10-28"},
+{"book_id": "B083", "title": "Quantum Business", "author": "G. Joshi", "genre": "Entrepreneurship", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B084", "title": "Digital Harmony", "author": "S. Mukherjee", "genre": "Cultural Studies", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B085", "title": "Programming Logic", "author": "R. Sharma", "genre": "Programming", "is_reserved": True, "reserved_by": "U044", "issue_date": "2025-10-22", "due_date": "2025-11-06"},
+{"book_id": "B086", "title": "Spiritual Startups", "author": "C. Rao", "genre": "Indian Heritage", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B087", "title": "Tech & Tradition", "author": "B. Kulkarni", "genre": "Cultural Studies", "is_reserved": True, "reserved_by": "U036", "issue_date": "2025-10-19", "due_date": "2025-11-03"},
+{"book_id": "B088", "title": "AI Innovators", "author": "Y. Saxena", "genre": "Artificial Intelligence", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B089", "title": "Startup Spirit", "author": "T. Iyer", "genre": "Entrepreneurship", "is_reserved": True, "reserved_by": "U011", "issue_date": "2025-10-20", "due_date": "2025-11-04"},
+{"book_id": "B090", "title": "Mathematics of AI", "author": "V. Patel", "genre": "Mathematics", "is_reserved": True, "reserved_by": "U043", "issue_date": "2025-10-10", "due_date": "2025-10-25"},
+{"book_id": "B091", "title": "Digital India", "author": "S. Mukherjee", "genre": "Technology", "is_reserved": True, "reserved_by": "U048", "issue_date": "2025-10-11", "due_date": "2025-10-26"},
+{"book_id": "B092", "title": "AI Horizons", "author": "J. Doe", "genre": "Artificial Intelligence", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B093", "title": "Python Mastery", "author": "R. Sharma", "genre": "Programming", "is_reserved": True, "reserved_by": "U032", "issue_date": "2025-10-16", "due_date": "2025-10-31"},
+{"book_id": "B094", "title": "Entrepreneur Bharat", "author": "Z. Jain", "genre": "Entrepreneurship", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B095", "title": "Holo AI", "author": "A. Banerjee", "genre": "Technology", "is_reserved": True, "reserved_by": "U016", "issue_date": "2025-10-12", "due_date": "2025-10-27"},
+{"book_id": "B096", "title": "AI Algorithms", "author": "Y. Saxena", "genre": "Artificial Intelligence", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B097", "title": "Cultural Intelligence", "author": "T. Iyer", "genre": "Cultural Studies", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None},
+{"book_id": "B098", "title": "Mathematical Vision", "author": "V. Patel", "genre": "Mathematics", "is_reserved": True, "reserved_by": "U041", "issue_date": "2025-10-18", "due_date": "2025-11-02"},
+{"book_id": "B099", "title": "Digital Heritage", "author": "C. Rao", "genre": "Indian Heritage", "is_reserved": True, "reserved_by": "U042", "issue_date": "2025-10-19", "due_date": "2025-11-03"},
+{"book_id": "B100", "title": "AI for Entrepreneurs", "author": "G. Joshi", "genre": "Entrepreneurship", "is_reserved": False, "reserved_by": None, "issue_date": None, "due_date": None}
+]
+# THE MAIN CODE FOR EXECUTION OF THE PROGRAM STARTS HERE
+authenticate_user()
+while True:
+    display_menu()
+    choice=int(input("Enter the Operation You like to use: "))
+    if choice==1:
+        add_book()
+    elif choice==2:
+        reserve_book()
+    elif choice==3:
+        return_book()
+    elif choice==4:
+        calculate_fine()
+    elif choice==5:
+        generate_report_fine()
+    elif choice==6:
+        search_book()
+    elif choice==7:
+        print("---Thank you for using the Management System!---See you Soon!!!---")
+        break
+    else:
+       print("Invalid Input! Enter value Again!!")
+
