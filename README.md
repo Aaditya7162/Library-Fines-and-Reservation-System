@@ -60,12 +60,8 @@ python library_system.py
 🔹 Login
 
 Enter the correct username and password to access the system.
-
-Example:
-
-Enter Username: admin
-Enter Password: admin123
-Login Successful!
+USERID --> 2502140122
+Password --> Library
 
 🔹 Using the Menu
 
